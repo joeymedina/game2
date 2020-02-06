@@ -56,7 +56,7 @@ namespace MonoGameWindowsStarter
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            //man = Content.Load<Texture2D>("man2");
+            man = Content.Load<Texture2D>("man2");
             texture = Content.Load<Texture2D>("pixel");
             finish = Content.Load<Texture2D>("finish");
             badman = Content.Load<Texture2D>("badman");
@@ -67,11 +67,13 @@ namespace MonoGameWindowsStarter
             manRect.Width = 75;
             manRect.Height = 75;
 
-            badmanRect.X = 800;
-            badmanRect.Y = ran.Next(400, 535);
-            badmanRect.Width = 55;
-            badmanRect.Height = 55;
-
+            if (!won)
+            {
+                badmanRect.X = 800;
+                badmanRect.Y = ran.Next(400, 535);
+                badmanRect.Width = 55;
+                badmanRect.Height = 55;
+            }
             finishRect = new Rectangle(925, 400, 100, 200);
             won = false;
             lost = false;
@@ -143,7 +145,8 @@ namespace MonoGameWindowsStarter
                 manRect.X = GraphicsDevice.Viewport.Width - manRect.Width;
             }
 
-            if(!lost) badmanRect.X -= 5;
+            if(!won) badmanRect.X -= 5;
+
             if (badmanRect.X < 0)
             {
                 badmanRect.X = 825;
@@ -181,8 +184,11 @@ namespace MonoGameWindowsStarter
             spriteBatch.Begin();
 
             spriteBatch.Draw(man, manRect, Color.White);
-            spriteBatch.Draw(badman, badmanRect, Color.White);
 
+            if (!won)
+            {
+                spriteBatch.Draw(badman, badmanRect, Color.White);
+            }
             spriteBatch.Draw(texture, new Rectangle(0, 0, 1042, 345), Color.Black);
             spriteBatch.Draw(texture, new Rectangle(0, 600, 1042, 175), Color.Black);
             spriteBatch.Draw(finish, finishRect, Color.Yellow);
