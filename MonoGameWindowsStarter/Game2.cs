@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
@@ -8,10 +9,11 @@ namespace MonoGameWindowsStarter
     /// <summary>
     /// This is the main type for your game.
     /// </summary>
-    public class Game1 : Game
+    public class Game2 : Game
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        SpriteFont spriteFont;
         Texture2D man;
         Texture2D texture;
         Texture2D badman;
@@ -23,10 +25,12 @@ namespace MonoGameWindowsStarter
         Texture2D finish;
         Random ran;
         bool won;
-        bool lost; 
+        bool lost;
+        SoundEffect bounceSFX;
+        SoundEffect winSFX;
+        SoundEffect hitSFX;
 
-
-        public Game1()
+        public Game2()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
@@ -57,6 +61,13 @@ namespace MonoGameWindowsStarter
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            
+            spriteFont = Content.Load<SpriteFont>("defaultFont");
+            
+            winSFX = Content.Load<SoundEffect>("winner");
+            bounceSFX = Content.Load<SoundEffect>("bounce");
+            hitSFX = Content.Load<SoundEffect>("hit");
+
             man = Content.Load<Texture2D>("man2");
             texture = Content.Load<Texture2D>("pixel");
             finish = Content.Load<Texture2D>("finish");
@@ -138,6 +149,7 @@ namespace MonoGameWindowsStarter
 
             if (manRect.X < 0)
             {
+
                 manRect.X = 0;
             }
 
@@ -149,13 +161,15 @@ namespace MonoGameWindowsStarter
             if(!won) badmanRect.X -= 5;
 
             if (badmanRect.X < 0)
-            {
+            {   bounceSFX.Play();
                 badmanRect.X = 825;
+                
                 badmanRect.Y = ran.Next(400, 535);
             }
 
             if (manRect.Intersects(badmanRect))
             {
+                hitSFX.Play();
                 lost = true;
                 badmanRect.X = 825;
                 badmanRect.X -= 5;
@@ -164,6 +178,7 @@ namespace MonoGameWindowsStarter
 
             if (manRect.Intersects(finishRect))
             {
+                winSFX.Play();
                 won = true;
                 badmanRect.X = 825;
                 badmanRect.X -= 5;
@@ -186,7 +201,7 @@ namespace MonoGameWindowsStarter
 
             spriteBatch.Draw(man, manRect, Color.White);
 
-            if (!won)
+            if (!won && !lost)
             {
                 spriteBatch.Draw(badman, badmanRect, Color.White);
             }
@@ -194,13 +209,15 @@ namespace MonoGameWindowsStarter
             spriteBatch.Draw(texture, new Rectangle(0, 600, 1042, 175), Color.Black);
             spriteBatch.Draw(finish, finishRect, Color.Yellow);
 
-            if (won)
+            if (won && !lost)
             {
-                spriteBatch.Draw(win, new Rectangle(525, 384, 200, 100), Color.MediumPurple);
+                
+                spriteBatch.DrawString(spriteFont, "YOU WIN WOO HOO!!!!!!", new Vector2(325, 450), Color.Purple);
             }
-            if (lost)
+            if (lost && !won)
             {
-                spriteBatch.Draw(lose, new Rectangle(525, 384, 200, 100), Color.MediumVioletRed);
+                
+                spriteBatch.DrawString(spriteFont, "YOU LOSE BOO HOO!!!!!!", new Vector2(325, 450), Color.Red);
             }
 
             spriteBatch.End();
