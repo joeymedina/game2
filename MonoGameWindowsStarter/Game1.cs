@@ -23,7 +23,8 @@ namespace MonoGameWindowsStarter
         Texture2D finish;
         Random ran;
         bool won;
-        bool lost;
+        bool lost; 
+
 
         public Game1()
         {
