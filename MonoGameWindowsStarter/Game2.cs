@@ -117,6 +117,7 @@ namespace MonoGameWindowsStarter
             {
                 won = false;
                 lost = false;
+                Initialize();
             }
             player.Update(gameTime, enemy);
             enemy.Update(gameTime);

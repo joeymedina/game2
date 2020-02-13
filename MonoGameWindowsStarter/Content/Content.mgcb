@@ -31,6 +31,30 @@
 /processorParam:Quality=Best
 /build:bounce.wav
 
+#begin C:/Users/joeymedina/Desktop/spriteSheet.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:C:/Users/joeymedina/Desktop/spriteSheet.png;spriteSheet.png
+
+#begin C:/Users/joeymedina/Desktop/spriteSheet.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:C:/Users/joeymedina/Desktop/spriteSheet.png;spriteSheet.png
+
 #begin defaultFont.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor

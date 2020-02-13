@@ -30,6 +30,7 @@ namespace MonoGameWindowsStarter
         public void Initialize()
         {
             ran = new Random();
+            enemyRect = new Rectangle();
             if (!game.won)
             {
                 enemyRect.X = 920;

@@ -11,8 +11,37 @@ using System.Threading.Tasks;
 
 namespace MonoGameWindowsStarter
 {
+
+    enum State
+    {   Idle = 0,
+        South = 4,
+        East = 1,
+        West = 2,
+        North = 3,
+        
+    }
+
+
+
     public class Player
     {
+        const int ANIMATION_FRAME_RATE = 124;
+
+        /// <summary>
+        /// How quickly the player should move
+        /// </summary>
+        const float PLAYER_SPEED = 250;
+
+        /// <summary>
+        /// The width of the animation frames
+        /// </summary>
+        const int FRAME_WIDTH = 64;
+
+        /// <summary>
+        /// The hieght of the animation frames
+        /// </summary>
+        const int FRAME_HEIGHT = 64;
+
 
         Game2 game;
 
@@ -23,19 +52,31 @@ namespace MonoGameWindowsStarter
         Rectangle manRect;
 
         Texture2D man;
+        Rectangle testmanRec;
+        //animation
+        Texture2D spriteSheet;
+        State state;
+        TimeSpan timer;
+        int frame;
+        // Vector2 position;
 
 
         public Player(Game2 game)
         {
             this.game = game;
+
+            timer = new TimeSpan(0);
+            // position = new Vector2(50, 400);
+            state = State.Idle;
+            testmanRec = new Rectangle(50, 400, 75, 75);
+            
         }
 
         public void Initialize()
         {
-            manRect.X = 50;
-            manRect.Y = 400;
-            manRect.Width = 75;
-            manRect.Height = 75;
+            testmanRec = new Rectangle(50, 400, 75, 75);
+
+
         }
 
         /// <summary>
@@ -44,6 +85,7 @@ namespace MonoGameWindowsStarter
         /// <param name="content">The ContentManager to use</param>
         public void LoadContent(ContentManager content)
         {
+           spriteSheet = game.Content.Load<Texture2D>("spriteSheet");
             man = content.Load<Texture2D>("man2");
             winSFX = content.Load<SoundEffect>("winner");
             hitSFX = content.Load<SoundEffect>("hit");
@@ -57,51 +99,91 @@ namespace MonoGameWindowsStarter
         {
 
             var keyboardState = Keyboard.GetState();
+            float delta = (float)gameTime.ElapsedGameTime.TotalSeconds;
             var badmanRect = enemy.enemyRect;
             /*movement*/
             // move up down left right
             if (keyboardState.IsKeyDown(Keys.Up))
             {
-                manRect.Y -= 5;
+                state = State.North;
+                // manRect.Y -= 5;
+                testmanRec.Y -= (int)(delta * PLAYER_SPEED);
+                
             }
-            if (keyboardState.IsKeyDown(Keys.Down))
+            else if (keyboardState.IsKeyDown(Keys.Down))
             {
-                manRect.Y += 5;
+                state = State.South;
+                // manRect.Y += 5;
+                testmanRec.Y += (int)(delta * PLAYER_SPEED);
+                
             }
 
-            if (keyboardState.IsKeyDown(Keys.Left))
+            else if (keyboardState.IsKeyDown(Keys.Left))
             {
-                manRect.X -= 5;
+                state = State.West;
+                // manRect.X -= 5;
+                testmanRec.X -= (int)(delta * PLAYER_SPEED);
+                //testmanRec.X = (int)position.Y;
             }
-            if (keyboardState.IsKeyDown(Keys.Right))
+            else if (keyboardState.IsKeyDown(Keys.Right))
             {
-                manRect.X += 5;
+                state = State.East;
+                // manRect.X += 5;
+                testmanRec.X += (int)(delta * PLAYER_SPEED);
+                //testmanRec.X = (int)position.Y;
             }
+            else
+            {
+                state = State.Idle;
+            }
+
+
+            if (state != State.Idle) timer += gameTime.ElapsedGameTime;
+
+            // Determine the frame should increase.  Using a while 
+            // loop will accomodate the possiblity the animation should 
+            // advance more than one frame.
+            while (timer.TotalMilliseconds > ANIMATION_FRAME_RATE)
+            {
+                // increase by one frame
+                frame++;
+                // reduce the timer by one frame duration
+                timer -= new TimeSpan(0, 0, 0, 0, ANIMATION_FRAME_RATE);
+            }
+
+            // Keep the frame within bounds (there are four frames)
+            frame %= 1;
+
 
             /*bounds*/
             // keeps man between the two black bars
-            if (manRect.Y < 345)
+            if (testmanRec.Y < 345)
             {
-                manRect.Y = 345;
+                //position.Y = 345;
+                testmanRec.Y = 345;
             }
 
-            if (manRect.Y > 600 - manRect.Height)
+            if (testmanRec.Y > 600 - testmanRec.Height)
             {
-                manRect.Y = 600 - manRect.Height;
+                //position.Y = 600 - testmanRec.Height;
+                testmanRec.Y = 600 - testmanRec.Height;
             }
 
             //keeps man on screen sides
-            if (manRect.X < 0)
+            if (testmanRec.X < 0)
             {
-                manRect.X = 0;
+                //position.X = 0;
+                testmanRec.X = 0;
             }
 
-            if (manRect.X > game.GraphicsDevice.Viewport.Width - manRect.Width)
+            if ((testmanRec.X > game.GraphicsDevice.Viewport.Width - testmanRec.Width))
             {
-                manRect.X = game.GraphicsDevice.Viewport.Width - manRect.Width;
+                
+                testmanRec.X = game.GraphicsDevice.Viewport.Width - testmanRec.Width;
             }
 
-            if (manRect.Intersects(enemy.enemyRect))
+            
+            if (testmanRec.Intersects(enemy.enemyRect))
             {
                 hitSFX.Play();
                 game.lost = true;
@@ -109,10 +191,11 @@ namespace MonoGameWindowsStarter
                 enemy.enemyRect.X = 920;
                 enemy.enemyRect.Y = enemy.ran.Next(400, 535);
                 badmanRect.X -= 5;
-                manRect.X = 50;
+                //position.X = 50;
+                testmanRec.X = 50;
             }
 
-            if (manRect.Intersects(game.finishRect))
+            if (testmanRec.Intersects(game.finishRect))
             {
                 winSFX.Play();
                 game.won = true;
@@ -121,7 +204,8 @@ namespace MonoGameWindowsStarter
                 enemy.enemyRect.Y = enemy.ran.Next(400, 535);
                 //badmanRect.X = 825;
                 //badmanRect.X -= 5;
-                manRect.X = 50;
+               // position.X = 50;
+                testmanRec.X = 50;
             }
 
 
@@ -129,7 +213,17 @@ namespace MonoGameWindowsStarter
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(man, manRect, Color.White);
+            //spriteBatch.Draw(man, manRect, Color.White);
+
+            var source = new Rectangle(
+                frame * FRAME_WIDTH, // X value 
+                (int)state % 5 * FRAME_HEIGHT, // Y value
+                FRAME_WIDTH, // Width 
+                FRAME_HEIGHT // Height
+                );
+
+            // render the sprite
+            spriteBatch.Draw(spriteSheet, new Vector2(testmanRec.X, testmanRec.Y), source, Color.White);
         }
     }
 }
